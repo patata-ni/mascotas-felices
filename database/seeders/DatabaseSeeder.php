@@ -289,18 +289,18 @@ class DatabaseSeeder extends Seeder
         ];
 
         foreach ($pedidos as $ped) {
-            $pedido = \App\Models\Pedido::create($ped);
+            $pedido = Pedido::create($ped);
             
             // Agregar detalles al pedido según el proveedor
             if ($pedido->proveedor_id == 1) {
                 // Proveedor de alimentos
-                \App\Models\PedidoDetalle::create([
+                PedidoDetalle::create([
                     'pedido_id' => $pedido->id,
                     'producto_id' => 1,
                     'cantidad' => 20,
                     'precio_unitario' => 80.00,
                 ]);
-                \App\Models\PedidoDetalle::create([
+                PedidoDetalle::create([
                     'pedido_id' => $pedido->id,
                     'producto_id' => 2,
                     'cantidad' => 15,
@@ -308,13 +308,13 @@ class DatabaseSeeder extends Seeder
                 ]);
             } elseif ($pedido->proveedor_id == 2) {
                 // Proveedor de higiene
-                \App\Models\PedidoDetalle::create([
+                PedidoDetalle::create([
                     'pedido_id' => $pedido->id,
                     'producto_id' => 5,
                     'cantidad' => 30,
                     'precio_unitario' => 15.00,
                 ]);
-                \App\Models\PedidoDetalle::create([
+                PedidoDetalle::create([
                     'pedido_id' => $pedido->id,
                     'producto_id' => 6,
                     'cantidad' => 50,
@@ -322,13 +322,13 @@ class DatabaseSeeder extends Seeder
                 ]);
             } else {
                 // Proveedor de juguetes
-                \App\Models\PedidoDetalle::create([
+                PedidoDetalle::create([
                     'pedido_id' => $pedido->id,
                     'producto_id' => 3,
                     'cantidad' => 40,
                     'precio_unitario' => 8.00,
                 ]);
-                \App\Models\PedidoDetalle::create([
+                PedidoDetalle::create([
                     'pedido_id' => $pedido->id,
                     'producto_id' => 4,
                     'cantidad' => 30,
@@ -336,7 +336,8 @@ class DatabaseSeeder extends Seeder
                 ]);
             }
             
-            // Calcular total del pedido
+            // Refrescar la relación y calcular total
+            $pedido->load('detalles');
             $pedido->calcularTotal();
         }
 
