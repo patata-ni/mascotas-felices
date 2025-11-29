@@ -35,8 +35,6 @@ if [ ! -f .env ]; then\n\
     cp .env.example .env\n\
     php artisan key:generate --force\n\
 fi\n\
-php artisan config:clear\n\
-php artisan migrate --force || true\n\
 exec php -S 0.0.0.0:${PORT:-8080} -t public\n\
 ' > /start.sh && chmod +x /start.sh
 
