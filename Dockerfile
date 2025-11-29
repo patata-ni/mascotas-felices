@@ -1,4 +1,4 @@
-FROM php:8.2-apache
+FROM php:8.2-cli
 
 # Instalar extensiones PHP necesarias
 RUN apt-get update && apt-get install -y \
@@ -10,16 +10,14 @@ RUN apt-get update && apt-get install -y \
     libpng-dev \
     libonig-dev \
     libxml2-dev \
-    && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip
-
-# Habilitar mod_rewrite para Apache
-RUN a2enmod rewrite
+    && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Instalar Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 # Establecer directorio de trabajo
-WORKDIR /var/www/html
+WORKDIR /app
 
 # Copiar archivos del proyecto
 COPY . .
@@ -28,31 +26,19 @@ COPY . .
 RUN composer install --no-dev --optimize-autoloader --no-interaction
 
 # Configurar permisos
-RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
-RUN chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
-
-# Configurar Apache DocumentRoot
-ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
-RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
-RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
+RUN chmod -R 775 storage bootstrap/cache
 
 # Crear .env desde ejemplo si no existe
-RUN if [ ! -f .env ]; then cp .env.example .env; fi
+RUN cp .env.example .env || true
 
-# Script de inicio
-COPY <<EOF /usr/local/bin/start.sh
-#!/bin/bash
-php artisan key:generate --force --no-interaction
-php artisan config:clear
-php artisan cache:clear
-php artisan migrate --force
-apache2-foreground
-EOF
-
-RUN chmod +x /usr/local/bin/start.sh
+# Generar APP_KEY
+RUN php artisan key:generate --force --no-interaction || true
 
 # Exponer puerto
-EXPOSE 80
+EXPOSE 8080
 
 # Comando de inicio
-CMD ["/usr/local/bin/start.sh"]
+CMD php artisan config:clear && \
+    php artisan cache:clear && \
+    php artisan migrate --force --no-interaction && \
+    php artisan serve --host=0.0.0.0 --port=${PORT:-8080}
