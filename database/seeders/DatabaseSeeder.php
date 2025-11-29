@@ -256,9 +256,10 @@ class DatabaseSeeder extends Seeder
         }
 
         // Crear pedidos de prueba
+        $fechaActual = date('Ymd');
         $pedidos = [
             [
-                'numero_pedido' => 'PED-' . date('Ymd') . '-0001',
+                'numero_pedido' => "PED-{$fechaActual}-0001",
                 'proveedor_id' => 1,
                 'usuario_id' => 3,
                 'fecha_pedido' => now()->subDays(5),
@@ -267,7 +268,7 @@ class DatabaseSeeder extends Seeder
                 'notas' => 'Pedido urgente de alimentos',
             ],
             [
-                'numero_pedido' => 'PED-' . date('Ymd') . '-0002',
+                'numero_pedido' => "PED-{$fechaActual}-0002",
                 'proveedor_id' => 2,
                 'usuario_id' => 3,
                 'fecha_pedido' => now()->subDays(10),
@@ -277,7 +278,7 @@ class DatabaseSeeder extends Seeder
                 'notas' => 'Pedido de productos de higiene',
             ],
             [
-                'numero_pedido' => 'PED-' . date('Ymd') . '-0003',
+                'numero_pedido' => "PED-{$fechaActual}-0003",
                 'proveedor_id' => 3,
                 'usuario_id' => 1,
                 'fecha_pedido' => now()->subDays(3),
