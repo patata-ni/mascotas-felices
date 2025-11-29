@@ -26,16 +26,14 @@ RUN composer install --no-dev --optimize-autoloader --no-interaction
 # Configurar permisos
 RUN chmod -R 777 storage bootstrap/cache
 
+# Copiar .env.example a .env
+RUN cp .env.example .env
+
+# Generar APP_KEY
+RUN php artisan key:generate --force
+
 # Exponer puerto
 EXPOSE 8080
 
-# Crear script de inicio
-RUN echo '#!/bin/sh\n\
-if [ ! -f .env ]; then\n\
-    cp .env.example .env\n\
-    php artisan key:generate --force\n\
-fi\n\
-exec php -S 0.0.0.0:${PORT:-8080} -t public\n\
-' > /start.sh && chmod +x /start.sh
-
-CMD ["/start.sh"]
+# Usar CMD simple sin script
+CMD php -S 0.0.0.0:8080 -t public
