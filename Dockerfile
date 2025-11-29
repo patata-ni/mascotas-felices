@@ -43,7 +43,7 @@ SESSION_LIFETIME=120\n\
 # Exponer puerto
 EXPOSE 8080
 
-# Script de inicio que sanitiza PORT
-RUN printf '#!/bin/sh\nPORT_NUM=$(echo ${PORT:-8080} | tr -cd "[:digit:]")\nexec php -S 0.0.0.0:${PORT_NUM} server.php\n' > /start.sh && chmod +x /start.sh
+# Script de inicio que guarda PORT y lo elimina del entorno
+RUN printf '#!/bin/sh\nPORT_NUM=${PORT:-8080}\nunset PORT\nexec php -S 0.0.0.0:$PORT_NUM server.php\n' > /start.sh && chmod +x /start.sh
 
 CMD ["/start.sh"]
