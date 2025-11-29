@@ -26,8 +26,22 @@ RUN composer install --no-dev --optimize-autoloader --no-interaction
 # Configurar permisos
 RUN chmod -R 777 storage bootstrap/cache
 
+# Crear un .env básico en build time
+RUN echo "APP_NAME=MascotasFelices\n\
+APP_ENV=production\n\
+APP_DEBUG=false\n\
+APP_URL=http://localhost\n\
+\n\
+LOG_CHANNEL=stack\n\
+\n\
+DB_CONNECTION=mysql\n\
+\n\
+SESSION_DRIVER=file\n\
+SESSION_LIFETIME=120\n\
+" > .env
+
 # Exponer puerto
 EXPOSE 8080
 
-# Usar bash para manejar variables y generar key en runtime
-CMD ["bash", "-c", "cp -n .env.example .env 2>/dev/null || true && php -S 0.0.0.0:${PORT} -t public"]
+# Comando simple
+CMD php -S 0.0.0.0:${PORT} -t public
