@@ -1,4 +1,4 @@
-FROM php:8.2-cli
+FROM php:8.2-apache
 
 # Instalar extensiones PHP necesarias y herramientas
 RUN apt-get update && apt-get install -y \
@@ -40,10 +40,16 @@ SESSION_DRIVER=file\n\
 SESSION_LIFETIME=120\n\
 " > .env
 
-# Exponer puerto
-EXPOSE 8080
+# Configurar Apache
+RUN a2enmod rewrite
+ENV APACHE_DOCUMENT_ROOT /app/public
+RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
+RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
 
-# Script de inicio que guarda PORT y lo elimina del entorno
-RUN printf '#!/bin/sh\necho "Starting Laravel application..."\nPORT_NUM=${PORT:-8080}\necho "Using port: $PORT_NUM"\nunset PORT\necho "Starting PHP server on 0.0.0.0:$PORT_NUM"\nexec php -S 0.0.0.0:$PORT_NUM server.php\n' > /start.sh && chmod +x /start.sh
+# Configurar puerto dinámico para Apache
+RUN printf '#!/bin/sh\nPORT=${PORT:-80}\nsed -i "s/Listen 80/Listen $PORT/" /etc/apache2/ports.conf\nsed -i "s/:80/:$PORT/" /etc/apache2/sites-available/000-default.conf\napache2-foreground\n' > /start.sh && chmod +x /start.sh
+
+# Exponer puerto
+EXPOSE 80
 
 CMD ["/start.sh"]
