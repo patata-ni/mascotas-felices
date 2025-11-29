@@ -43,5 +43,7 @@ SESSION_LIFETIME=120\n\
 # Exponer puerto
 EXPOSE 8080
 
-# Usar servidor PHP sin invocar artisan
-CMD php -S 0.0.0.0:${PORT:-8080} server.php
+# Script de inicio que sanitiza PORT
+RUN printf '#!/bin/sh\nPORT_NUM=$(echo ${PORT:-8080} | tr -cd "[:digit:]")\nexec php -S 0.0.0.0:${PORT_NUM} server.php\n' > /start.sh && chmod +x /start.sh
+
+CMD ["/start.sh"]
