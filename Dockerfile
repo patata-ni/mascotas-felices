@@ -37,7 +37,8 @@ if [ ! -f .env ]; then\n\
 fi\n\
 php artisan config:clear\n\
 php artisan migrate --force || true\n\
-exec php artisan serve --host=0.0.0.0 --port=${PORT:-8080}\n\
+PORT=${PORT:-8080}\n\
+exec php artisan serve --host=0.0.0.0 --port="$PORT"\n\
 ' > /start.sh && chmod +x /start.sh
 
 CMD ["/start.sh"]
