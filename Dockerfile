@@ -44,6 +44,6 @@ SESSION_LIFETIME=120\n\
 EXPOSE 8080
 
 # Script de inicio que guarda PORT y lo elimina del entorno
-RUN printf '#!/bin/sh\nPORT_NUM=${PORT:-8080}\nunset PORT\nexec php -S 0.0.0.0:$PORT_NUM server.php\n' > /start.sh && chmod +x /start.sh
+RUN printf '#!/bin/sh\necho "Starting Laravel application..."\nPORT_NUM=${PORT:-8080}\necho "Using port: $PORT_NUM"\nunset PORT\necho "Starting PHP server on 0.0.0.0:$PORT_NUM"\nexec php -S 0.0.0.0:$PORT_NUM server.php\n' > /start.sh && chmod +x /start.sh
 
 CMD ["/start.sh"]
