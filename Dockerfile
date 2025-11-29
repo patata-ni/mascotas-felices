@@ -43,5 +43,5 @@ SESSION_LIFETIME=120\n\
 # Exponer puerto
 EXPOSE 8080
 
-# Comando simple
-CMD php -S 0.0.0.0:${PORT} -t public
+# Usar servidor PHP sin invocar artisan
+CMD php -S 0.0.0.0:${PORT:-8080} server.php
