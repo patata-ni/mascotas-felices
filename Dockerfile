@@ -26,14 +26,8 @@ RUN composer install --no-dev --optimize-autoloader --no-interaction
 # Configurar permisos
 RUN chmod -R 777 storage bootstrap/cache
 
-# Copiar .env.example a .env
-RUN cp .env.example .env
-
-# Generar APP_KEY
-RUN php artisan key:generate --force
-
 # Exponer puerto
 EXPOSE 8080
 
-# Usar bash para manejar variables
-CMD ["bash", "-c", "php -S 0.0.0.0:${PORT} -t public"]
+# Usar bash para manejar variables y generar key en runtime
+CMD ["bash", "-c", "cp -n .env.example .env 2>/dev/null || true && php -S 0.0.0.0:${PORT} -t public"]
