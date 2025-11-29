@@ -35,5 +35,5 @@ RUN php artisan key:generate --force
 # Exponer puerto
 EXPOSE 8080
 
-# Usar CMD simple sin script
-CMD php -S 0.0.0.0:8080 -t public
+# Usar bash para manejar variables
+CMD ["bash", "-c", "php -S 0.0.0.0:${PORT} -t public"]
