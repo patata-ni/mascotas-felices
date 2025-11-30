@@ -15,7 +15,7 @@ class Cliente extends Model
         'tipo_documento',
         'telefono',
         'email',
-        'password',
+        'contrasena',
         'direccion',
         'fecha_nacimiento',
         'puntos_fidelidad',
@@ -24,7 +24,7 @@ class Cliente extends Model
     ];
 
     protected $hidden = [
-        'password',
+        'contrasena',
     ];
 
     protected $casts = [
@@ -32,7 +32,7 @@ class Cliente extends Model
         'puntos_fidelidad' => 'integer',
         'total_compras' => 'decimal:2',
         'activo' => 'boolean',
-        'password' => 'hashed',
+        'contrasena' => 'hashed',
     ];
 
     /**

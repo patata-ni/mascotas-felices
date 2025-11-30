@@ -18,6 +18,7 @@ return new class extends Migration
             $table->enum('tipo_documento', ['DNI', 'RUC', 'CE', 'PASAPORTE'])->default('DNI');
             $table->string('telefono', 20)->nullable();
             $table->string('email', 100)->nullable();
+            $table->string('contrasena')->nullable();
             $table->text('direccion')->nullable();
             $table->date('fecha_nacimiento')->nullable();
             $table->integer('puntos_fidelidad')->default(0);

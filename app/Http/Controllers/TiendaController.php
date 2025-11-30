@@ -268,7 +268,7 @@ class TiendaController extends Controller
                          ->first();
 
         // Verificar si existe el cliente y la contraseña es correcta
-        if (!$cliente || !\Hash::check($validated['password'], $cliente->password)) {
+        if (!$cliente || !\Hash::check($validated['password'], $cliente->contrasena)) {
             return back()
                 ->withInput($request->only('email'))
                 ->withErrors(['email' => 'Las credenciales son incorrectas']);
@@ -341,7 +341,7 @@ class TiendaController extends Controller
             'tipo_documento' => $validated['tipo_documento'],
             'telefono' => $validated['telefono'] ?? null,
             'email' => $validated['email'],
-            'password' => $validated['password'], // Se hasheará automáticamente por el cast
+            'contrasena' => $validated['password'], // Se hasheará automáticamente por el cast
             'direccion' => $validated['direccion'] ?? null,
             'fecha_nacimiento' => $validated['fecha_nacimiento'] ?? null,
             'puntos_fidelidad' => 0,

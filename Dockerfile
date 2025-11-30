@@ -50,7 +50,7 @@ RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-av
 RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
 
 # Configurar puerto dinámico para Apache y ejecutar migraciones
-RUN printf '#!/bin/sh\necho "Running migrations..."\nphp artisan migrate --force\necho "Running seeders..."\nphp artisan db:seed --force\necho "Starting Apache..."\nPORT=${PORT:-80}\nsed -i "s/Listen 80/Listen $PORT/" /etc/apache2/ports.conf\nsed -i "s/:80/:$PORT/" /etc/apache2/sites-available/000-default.conf\napache2-foreground\n' > /start.sh && chmod +x /start.sh
+RUN printf '#!/bin/sh\necho "Configuring storage..."\nmkdir -p storage/logs storage/framework/{sessions,views,cache}\ntouch storage/logs/laravel.log\nchmod -R 777 storage bootstrap/cache\nchown -R www-data:www-data storage bootstrap/cache\necho "Running migrations..."\nphp artisan migrate --force\necho "Running seeders..."\nphp artisan db:seed --force\necho "Starting Apache..."\nPORT=${PORT:-80}\nsed -i "s/Listen 80/Listen $PORT/" /etc/apache2/ports.conf\nsed -i "s/:80/:$PORT/" /etc/apache2/sites-available/000-default.conf\napache2-foreground\n' > /start.sh && chmod +x /start.sh
 
 # Exponer puerto
 EXPOSE 80
