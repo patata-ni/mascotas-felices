@@ -6,9 +6,10 @@ RUN apt-get update && apt-get install -y \
     libpng-dev \
     libonig-dev \
     libxml2-dev \
+    libpq-dev \
     git \
     unzip \
-    && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip \
+    && docker-php-ext-install pdo_mysql pdo_pgsql pgsql mbstring exif pcntl bcmath gd zip \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Instalar Composer
@@ -23,8 +24,10 @@ COPY . .
 # Instalar dependencias
 RUN composer install --no-dev --optimize-autoloader --no-interaction
 
-# Configurar permisos
-RUN chmod -R 777 storage bootstrap/cache
+# Configurar permisos (después de composer install)
+RUN mkdir -p storage/logs storage/framework/{sessions,views,cache} \
+    && chmod -R 777 storage bootstrap/cache \
+    && chown -R www-data:www-data storage bootstrap/cache
 
 # Crear un .env básico en build time
 RUN echo "APP_NAME=MascotasFelices\n\
