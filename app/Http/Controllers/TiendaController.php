@@ -311,17 +311,18 @@ class TiendaController extends Controller
      */
     public function registroPost(Request $request)
     {
-        $validated = $request->validate([
-            'nombre' => 'required|max:150',
-            'documento' => 'required|max:20|unique:clientes,documento',
-            'tipo_documento' => 'required|in:INE,CURP,RFC,PASAPORTE',
-            'telefono' => 'nullable|max:20',
-            'email' => 'required|email|max:100|unique:clientes,email',
-            'password' => 'required|min:6|confirmed',
-            'direccion' => 'nullable',
-            'fecha_nacimiento' => 'nullable|date',
-            'acepta_terminos' => 'required|accepted',
-        ], [
+        try {
+            $validated = $request->validate([
+                'nombre' => 'required|max:150',
+                'documento' => 'required|max:20|unique:clientes,documento',
+                'tipo_documento' => 'required|in:INE,CURP,RFC,PASAPORTE',
+                'telefono' => 'nullable|max:20',
+                'email' => 'required|email|max:100|unique:clientes,email',
+                'password' => 'required|min:6|confirmed',
+                'direccion' => 'nullable',
+                'fecha_nacimiento' => 'nullable|date',
+                'acepta_terminos' => 'required|accepted',
+            ], [
             'nombre.required' => 'El nombre es obligatorio',
             'documento.required' => 'El número de documento es obligatorio',
             'documento.unique' => 'Este documento ya está registrado',
@@ -349,18 +350,23 @@ class TiendaController extends Controller
             'activo' => true,
         ]);
 
-        // Login automático
-        session([
-            'cliente_id' => $cliente->id,
-            'cliente_nombre' => $cliente->nombre,
-            'cliente_email' => $cliente->email,
-            'cliente_documento' => $cliente->documento,
-            'cliente_tipo_documento' => $cliente->tipo_documento,
-            'cliente_puntos' => $cliente->puntos_fidelidad
-        ]);
+            // Login automático
+            session([
+                'cliente_id' => $cliente->id,
+                'cliente_nombre' => $cliente->nombre,
+                'cliente_email' => $cliente->email,
+                'cliente_documento' => $cliente->documento,
+                'cliente_tipo_documento' => $cliente->tipo_documento,
+                'cliente_puntos' => $cliente->puntos_fidelidad
+            ]);
 
-        return redirect()->route('tienda.login')
-            ->with('success', '¡Cuenta creada exitosamente! Por favor inicia sesión.');
+            return redirect()->route('tienda.index')
+                ->with('success', '¡Cuenta creada exitosamente!');
+                
+        } catch (\Exception $e) {
+            \Log::error('Error en registro: ' . $e->getMessage());
+            return back()->withInput()->with('error', 'Error al crear la cuenta: ' . $e->getMessage());
+        }
     }
 
     /**
